@@ -19,11 +19,11 @@ public class ImportService
     {
         var settings = new XmlReaderSettings
         {
-            DtdProcessing = DtdProcessing.Parse,
-            XmlResolver = new XmlUrlResolver()
+            DtdProcessing = DtdProcessing.Prohibit,   // reject DOCTYPE entirely
+            XmlResolver = null                        // no external resolution
         };
 
-        var document = new XmlDocument { XmlResolver = new XmlUrlResolver() };
+        var document = new XmlDocument { XmlResolver = null }; // belt and suspenders
         using var reader = XmlReader.Create(new StringReader(xml), settings);
         document.Load(reader);
 
