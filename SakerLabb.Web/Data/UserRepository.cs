@@ -18,14 +18,17 @@ public class UserRepository
     {
         using var connection = _db.Open();
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT Id, Username, PasswordHash, Role, Email, Personnummer, SecurityAnswer, ResetToken FROM Users "
-            + "WHERE Username = '" + username + "' AND PasswordHash = '" + CryptoService.HashPassword(password) + "'";
+        command.CommandText = "SELECT Id, Username, PasswordHash, Role, Email, Personnummer, SecurityAnswer, ResetToken " +
+                            "FROM Users WHERE Username = @username AND PasswordHash = @passwordHash";
+
+        command.Parameters.Add(new SqliteParameter("@username", username));
+        command.Parameters.Add(new SqliteParameter("@passwordHash", CryptoService.HashPassword(password)));
 
         var user = Read(command).FirstOrDefault();
 
         if (user is not null)
         {
-            _logger.LogInformation("Inloggning lyckades för {Username} med lösenord {Password}", username, password);
+            _logger.LogInformation("Inloggning lyckades för {Username}", username);
         }
 
         return user;
